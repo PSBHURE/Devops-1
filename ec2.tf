@@ -62,6 +62,9 @@ resource "aws_instance" "my_instance" {
         SERVER-1 = "t2.micro",
         SERVER-2 = "t2.medium"
     })           # meta argument this can create 2 instance with diff name with diff type
+    
+    depends_on = [ aws_security_group.my_sg ]  # meta argument now without this SG created this EC2-instancewill not create
+
     key_name = aws_key_pair.deployer.key_name
     security_groups = [aws_security_group.my_sg.name]
     instance_type = each.value
