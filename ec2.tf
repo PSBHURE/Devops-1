@@ -57,20 +57,24 @@ resource "aws_security_group" "my_sg" {
 }
 #ec2 instance
 resource "aws_instance" "my_instance" {
-    count = 2   # meta argument
+    #count = 2   # meta argument but this create 2 instance with same name and same type
+    for_each = tomap({
+        SERVER-1 = "t2.micro",
+        SERVER-2 = "t2.medium"
+    })           # meta argument this can create 2 instance with diff name with diff type
     key_name = aws_key_pair.deployer.key_name
     security_groups = [aws_security_group.my_sg.name]
-    instance_type = var.ec2_instance_type.default
+    instance_type = each.value
     ami = var.ec2_ami_id.default  #ubuntu
     user_data = file("install_nginx.sh") + "\n" + file("aws_cli_install.sh")
                 
 
     root_block_device {
-      volume_size = var.ec2_root_storage_size.default
+      volume_size = var.ec2_root_storage_size
       volume_type = "gp3"
     }
     tags = {
-      Name = "TERRAFORM_INSTANCE_BY_SCRIPT"
+      Name = each.key
     }
   
 }
