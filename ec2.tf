@@ -73,7 +73,7 @@ resource "aws_instance" "my_instance" {
                 
 
     root_block_device {
-      volume_size = var.ec2_root_storage_size
+      volume_size = var.env == "prod" ? 20 :var.ec2_root_storage_size
       volume_type = "gp3"
     }
     tags = {
