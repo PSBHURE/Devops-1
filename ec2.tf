@@ -57,13 +57,16 @@ resource "aws_security_group" "my_sg" {
 }
 #ec2 instance
 resource "aws_instance" "my_instance" {
+    count = 2   # meta argument
     key_name = aws_key_pair.deployer.key_name
     security_groups = [aws_security_group.my_sg.name]
-    instance_type = "t2.micro"
-    ami = "ami-021a584b49225376d"  #ubuntu
+    instance_type = var.ec2_instance_type.default
+    ami = var.ec2_ami_id.default  #ubuntu
+    user_data = file("install_nginx.sh") + "\n" + file("aws_cli_install.sh")
+                
 
     root_block_device {
-      volume_size = 15
+      volume_size = var.ec2_root_storage_size.default
       volume_type = "gp3"
     }
     tags = {
